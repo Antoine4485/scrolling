@@ -1,7 +1,3 @@
-# README : FICHIER A EXECUTER DIRECTEMENT DANS L'INVITE DE COMMANDE WINDOWS
-# SCROLLING HORIZONTAL ET VERTICAL OK
-# COULEURS OK
-
 import curses
 import yaml
 
@@ -9,13 +5,13 @@ import yaml
 class Scrolling:
 
     def __init__(self, scrolling_type="horizontal"):
-        self.scrolling_type = scrolling_type
-        self.config = self._get_config()
-        self.screen = curses.initscr()
-        self.show_in_command_line()
+        self.__scrolling_type = scrolling_type
+        self.__config = self.__get_config()
+        self.__screen = curses.initscr()
+        self.__show_in_command_line()
 
     @staticmethod
-    def _get_config():
+    def __get_config():
         with open("config.yml", 'r', encoding='utf8') as file:
             config = {}
             try:
@@ -27,35 +23,35 @@ class Scrolling:
             finally:
                 return config
 
-    def show_text(self, text_to_show, sign):
-        scroll_text_padding, sep = (" ", "|") if self.scrolling_type == "horizontal" else ("", "-")
-        draw = f"{sep}{self.config["text"]["fixed"]:^{self.config["scrolling"][self.scrolling_type]["fixed_text"]}}" \
-               f"{sep}{scroll_text_padding}{text_to_show:{sign}{self.config["scrolling"][self.scrolling_type]["length"]}}" \
+    def __show_text(self, text_to_show, sign):
+        scroll_text_padding, sep = (" ", "|") if self.__scrolling_type == "horizontal" else ("", "-")
+
+        draw = f"{sep}{self.__config["text"]["fixed"]:^{self.__config["scrolling"][self.__scrolling_type]["fixed_text"]}}" \
+               f"{sep}{scroll_text_padding}{text_to_show:{sign}{self.__config["scrolling"][self.__scrolling_type]["length"]}}" \
                f"{scroll_text_padding}{sep}"
-        position = self.config["scrolling"][self.scrolling_type]["position"]
+
+        position = self.__config["scrolling"][self.__scrolling_type]["position"]
 
         for i, letter in enumerate(draw):
-            if self.scrolling_type == "vertical":
-                self.screen.addstr(position[1] + i, position[0], letter)
+            if self.__scrolling_type == "vertical":
+                self.__screen.addstr(position[1] + i, position[0], letter)
             else:
-                self.screen.addstr(position[1], position[0] + i, letter)
+                self.__screen.addstr(position[1], position[0] + i, letter)
 
-        self.screen.refresh()
-        curses.delay_output(round(100000 / self.config["scrolling"][self.scrolling_type]["speed"]))
+        self.__screen.refresh()
+        curses.delay_output(round(100000 / self.__config["scrolling"][self.__scrolling_type]["speed"]))
 
-    def show_in_command_line(self):
-        if not self.config:
+    def __show_in_command_line(self):
+        if not self.__config:
             return
 
         curses.start_color()
-        text = self.config["text"]["scroll"]
-        length = self.config["scrolling"][self.scrolling_type]["length"]
-        cpt = 0
+        text = self.__config["text"]["scroll"]
+        length = self.__config["scrolling"][self.__scrolling_type]["length"]
 
-        while True and cpt < 2:
-            cpt += 1
+        while True:
 
-            if self.config["scrolling"][self.scrolling_type]["direction"] in ("up", "left"):
+            if self.__config["scrolling"][self.__scrolling_type]["direction"] in ("up", "left"):
                 start = 0
                 for i in range(len(text) + length):
                     if i >= length:
@@ -63,7 +59,7 @@ class Scrolling:
                     sign = ">"
                     if i >= len(text):
                         sign = "<"
-                    self.show_text(text[start:i + 1], sign)
+                    self.__show_text(text[start:i + 1], sign)
             else:
                 for i in range(len(text), -length, -1):
                     start = i
@@ -71,10 +67,7 @@ class Scrolling:
                     if start < 0:
                         start = 0
                         sign = ">"
-                    self.show_text(text[start:i + length], sign)
-
-        self.screen.getch()
-        curses.endwin()
+                    self.__show_text(text[start:i + length], sign)
 
 
 if __name__ == '__main__':

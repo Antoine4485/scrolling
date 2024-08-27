@@ -6,7 +6,7 @@ scrolling: # paramètres du bloc d'affichage
     position:   [3, 20] # position en [x, y] du bloc d'affichage, x -> n° colonne, y -> n° de ligne
     speed:      250 # vitesse en ms
   vertical: # configuration pour le format vertical
-    direction:  down # haut -> de bas en haut, down -> de haut en bas
+    direction:  up # haut -> de bas en haut, down -> de haut en bas
     fixed_text: 4
     length:     10
     position:   [5, 3]
